@@ -13,8 +13,9 @@ layout(location = 0) out vec4 frag_color;
 // For instance, you can think of this like material settings in 
 // Unity
 struct Material {
-	sampler2D Diffuse;
-	float     Shininess;
+	sampler2D	Diffuse;
+	float		Shininess;
+	float		RednessMultiplier;
 };
 // Create a uniform for the material
 uniform Material u_Material;
@@ -43,8 +44,10 @@ void main() {
 	// Get the albedo from the diffuse / albedo map
 	vec4 textureColor = texture(u_Material.Diffuse, inUV);
 
+	vec4 textureColor.a = textureColor.a * RednessMultiplier;
+
 	// combine for the final result
-	vec3 result = lightAccumulation  * inColor * textureColor.rgb;
+	vec3 result = lightAccumulation * inColor * textureColor.rgb;
 
 	frag_color = vec4(ColorCorrect(result), textureColor.a);
 }
