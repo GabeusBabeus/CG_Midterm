@@ -28,7 +28,7 @@ nlohmann::json MovementBehaviour::ToJson() const
 	};
 }
 
-MovementBehaviour::MovementBehaviour() : IComponent(), _impulse(5.0f)
+MovementBehaviour::MovementBehaviour() : IComponent(), _impulse(0.2f)
 { }
 
 MovementBehaviour::~MovementBehaviour() = default;
@@ -42,12 +42,15 @@ MovementBehaviour::Sptr MovementBehaviour::FromJson(const nlohmann::json & blob)
 
 void MovementBehaviour::Update(float deltaTime)
 {
+	auto currentpos = GetGameObject()->GetPosition();
+
 	bool pressed = glfwGetKey(Application::Get().GetWindow(), GLFW_KEY_W);
 	if (pressed)
 	{
 		if (_isPressed == false)
 		{
-			_body->SetLinearVelocity(glm::vec3(_impulse, 0.0f, 0.0f));
+			glm::vec3 target = { _impulse,0,0 };
+			GetGameObject()->SetPostion(currentpos+target);
 			GetGameObject()->SetRotation(glm::vec3(90.0f, 0.0f, -90.0f));
 		}
 		_isPressed = pressed;
@@ -62,7 +65,9 @@ void MovementBehaviour::Update(float deltaTime)
 	{
 		if (_isPressed == false)
 		{
-			_body->SetLinearVelocity(glm::vec3(-_impulse, 0.0f, 0.0f));
+			glm::vec3 target = { -_impulse,0,0 };
+
+			GetGameObject()->SetPostion(currentpos+target);
 			GetGameObject()->SetRotation(glm::vec3(90.0f, 0.0f, 90.0f));
 		}
 		_isPressed = pressed1;
@@ -77,7 +82,8 @@ void MovementBehaviour::Update(float deltaTime)
 	{
 		if (_isPressed == false)
 		{
-			_body->SetLinearVelocity(glm::vec3(0.0f, _impulse, 0.0f));
+			glm::vec3 target = { 0,-_impulse,0 };
+			GetGameObject()->SetPostion(currentpos + target);
 			GetGameObject()->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
 		}
 		_isPressed = pressed2;
@@ -92,7 +98,8 @@ void MovementBehaviour::Update(float deltaTime)
 	{
 		if (_isPressed == false)
 		{
-			_body->SetLinearVelocity(glm::vec3(0.0f, -_impulse, 0.0f));
+			glm::vec3 target = { 0,_impulse,0 };
+			GetGameObject()->SetPostion(currentpos+target);
 			GetGameObject()->SetRotation(glm::vec3(90.0f, 0.0f, 180.0f));
 		}
 		_isPressed = pressed3;
@@ -106,7 +113,8 @@ void MovementBehaviour::Update(float deltaTime)
 	{
 		if (pressed2 == false && pressed3 == false)
 		{
-			_body->SetLinearVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
+
+			//GetGameObject()->SetPostion(currentpos+target);(glm::vec3(0.0f, 0.0f, 0.0f));
 		}
 	}
 }

@@ -48,6 +48,7 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 #include "Gameplay/Components/SimpleCameraControl.h"
+#include "Gameplay/Components/MovementBehaviour.h"
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -346,6 +347,33 @@ void DefaultSceneLayer::_CreateScene()
 
 
 		// Box to showcase the specular material
+		GameObject::Sptr Pac = scene->CreateGameObject("Character");
+		{
+			
+			// Set and rotation position in the scene
+			Pac->SetPostion(glm::vec3(2.0f, -4.0f, 1.0f));
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Pac->Add<RenderComponent>();
+			renderer->SetMesh(sphere);
+			renderer->SetMaterial(testMaterial); 
+
+			RigidBody::Sptr rb = Pac->Add<RigidBody>();
+			rb->AddCollider(BoxCollider::Create(glm::vec3(1, 1, 1)))->SetPosition({ 0,0,-1 });
+
+			Light::Sptr light = Pac->Add<Light>();
+			light->SetIntensity(0);
+			light->SetColor({ 1,1,1, });
+			light->SetRadius(50);
+
+			MovementBehaviour::Sptr control = Pac->Add<MovementBehaviour>();
+
+			TriggerVolume::Sptr trigger = Pac->Add<TriggerVolume>();
+			trigger->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+
+			MaterialSwapBehaviour::Sptr swapper = Pac->Add<MaterialSwapBehaviour>();
+		}
+
 		GameObject::Sptr specBox = scene->CreateGameObject("Specular Object");
 		{
 			MeshResource::Sptr boxMesh = ResourceManager::CreateAsset<MeshResource>();
@@ -355,10 +383,16 @@ void DefaultSceneLayer::_CreateScene()
 			// Set and rotation position in the scene
 			specBox->SetPostion(glm::vec3(0, -4.0f, 1.0f));
 
+			RigidBody::Sptr physics = specBox->Add<RigidBody>(/*static by default*/);
+			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+
+			TriggerVolume::Sptr trigger = specBox->Add<TriggerVolume>();
+			trigger->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+
 			// Add a render component
 			RenderComponent::Sptr renderer = specBox->Add<RenderComponent>();
 			renderer->SetMesh(boxMesh);
-			renderer->SetMaterial(testMaterial); 
+			renderer->SetMaterial(testMaterial);
 		}
 
 		/////////////////////////// UI //////////////////////////////
@@ -397,11 +431,11 @@ void DefaultSceneLayer::_CreateScene()
 		}
 		*/
 
-		GameObject::Sptr particles = scene->CreateGameObject("Particles");
-		{
-			ParticleSystem::Sptr particleManager = particles->Add<ParticleSystem>();  
-			particleManager->AddEmitter(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 10.0f), 10.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); 
-		}
+		//GameObject::Sptr particles = scene->CreateGameObject("Particles");
+		//{
+		//	ParticleSystem::Sptr particleManager = particles->Add<ParticleSystem>();  
+		//	particleManager->AddEmitter(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 10.0f), 10.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); 
+		//}
 
 		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("textures/ui-sprite.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
