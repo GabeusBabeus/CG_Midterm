@@ -343,11 +343,6 @@ void DefaultSceneLayer::_CreateScene()
 			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
 		}
 
-		GameObject::Sptr _GameManager = scene->CreateGameObject("GameManager");
-		{();
-			GameManager::Sptr = _GameManager->Add<GameManager>
-
-		}
 
 
 		// Box to showcase the specular material
