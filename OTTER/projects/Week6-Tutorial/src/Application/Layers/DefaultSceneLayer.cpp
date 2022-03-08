@@ -49,6 +49,9 @@
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 #include "Gameplay/Components/SimpleCameraControl.h"
 #include "Gameplay/Components/MovementBehaviour.h"
+#include "Gameplay/Components/SeekBehaviour.h"
+
+
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -135,10 +138,13 @@ void DefaultSceneLayer::_CreateScene()
 
 
 		// Load in the meshes
-		MeshResource::Sptr monkeyMesh = ResourceManager::CreateAsset<MeshResource>("Monkey.obj");
+		MeshResource::Sptr monkeyMesh = ResourceManager::CreateAsset<MeshResource>("Otomatome.obj");
+		//MeshResource::Sptr ghost = ResourceManager::CreateAsset<MeshResource>("SpookGhost.obj");
+
 
 		// Load in some textures
 		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/box-diffuse.png");
+		Texture2D::Sptr    OtomaTex = ResourceManager::CreateAsset<Texture2D>("textures/Otomatome.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
 		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/monkey-uvMap.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
@@ -248,6 +254,17 @@ void DefaultSceneLayer::_CreateScene()
 			toonMaterial->Set("u_Material.Steps", 8);
 		}
 
+		// Our toon shader material
+		Material::Sptr urmum = ResourceManager::CreateAsset<Material>(deferredForward);
+		{
+			toonMaterial->Name = "Otama";
+			toonMaterial->Set("u_Material.AlbedoMap", boxTexture);
+			toonMaterial->Set("u_Material.NormalMap", normalMapDefault);
+			toonMaterial->Set("s_ToonTerm", toonLut);
+			toonMaterial->Set("u_Material.Shininess", 0.1f);
+			toonMaterial->Set("u_Material.Steps", 8);
+		}
+
 
 		Material::Sptr displacementTest = ResourceManager::CreateAsset<Material>(displacementShader);
 		{
@@ -318,7 +335,7 @@ void DefaultSceneLayer::_CreateScene()
 			camera->SetPostion({ -9, -6, 15 });
 			camera->LookAt(glm::vec3(0.0f));
 
-			camera->Add<SimpleCameraControl>();
+			//camera->Add<SimpleCameraControl>();
 
 			// This is now handled by scene itself!
 			//Camera::Sptr cam = camera->Add<Camera>();
@@ -355,8 +372,8 @@ void DefaultSceneLayer::_CreateScene()
 
 			// Add a render component
 			RenderComponent::Sptr renderer = Pac->Add<RenderComponent>();
-			renderer->SetMesh(sphere);
-			renderer->SetMaterial(testMaterial); 
+			renderer->SetMesh(monkeyMesh);
+			renderer->SetMaterial(testMaterial);
 
 			RigidBody::Sptr rb = Pac->Add<RigidBody>();
 			rb->AddCollider(BoxCollider::Create(glm::vec3(1, 1, 1)))->SetPosition({ 0,0,-1 });
@@ -374,26 +391,53 @@ void DefaultSceneLayer::_CreateScene()
 			MaterialSwapBehaviour::Sptr swapper = Pac->Add<MaterialSwapBehaviour>();
 		}
 
-		GameObject::Sptr specBox = scene->CreateGameObject("Specular Object");
+		GameObject::Sptr Ghost = scene->CreateGameObject("Character");
 		{
-			MeshResource::Sptr boxMesh = ResourceManager::CreateAsset<MeshResource>();
-			boxMesh->AddParam(MeshBuilderParam::CreateCube(ZERO, ONE));
-			boxMesh->GenerateMesh();
 
 			// Set and rotation position in the scene
-			specBox->SetPostion(glm::vec3(0, -4.0f, 1.0f));
-
-			RigidBody::Sptr physics = specBox->Add<RigidBody>(/*static by default*/);
-			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
-
-			TriggerVolume::Sptr trigger = specBox->Add<TriggerVolume>();
-			trigger->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+			Ghost->SetPostion(glm::vec3(2.0f, -10.0f, 1.0f));
 
 			// Add a render component
-			RenderComponent::Sptr renderer = specBox->Add<RenderComponent>();
-			renderer->SetMesh(boxMesh);
+			RenderComponent::Sptr renderer = Ghost->Add<RenderComponent>();
+			renderer->SetMesh(monkeyMesh);
 			renderer->SetMaterial(testMaterial);
+
+			RigidBody::Sptr rb = Ghost->Add<RigidBody>();
+			rb->AddCollider(BoxCollider::Create(glm::vec3(1, 1, 1)))->SetPosition({ 0,0,-1 });
+
+			SeekBehaviour::Sptr control = Ghost->Add<SeekBehaviour>();
+
+			TriggerVolume::Sptr trigger = Ghost->Add<TriggerVolume>();
+			trigger->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+
+			MaterialSwapBehaviour::Sptr swapper = Ghost->Add<MaterialSwapBehaviour>();
 		}
+
+		for (int i = 0; i < 10; i++) {
+
+			GameObject::Sptr specBox = scene->CreateGameObject("Pellet");
+			{
+				MeshResource::Sptr boxMesh = ResourceManager::CreateAsset<MeshResource>();
+				boxMesh->AddParam(MeshBuilderParam::CreateCube(ZERO, ONE));
+				boxMesh->GenerateMesh();
+
+				// Set and rotation position in the scene
+				specBox->SetPostion(glm::vec3(0, -4.0f+(i*5), 1.0f));
+
+				RigidBody::Sptr physics = specBox->Add<RigidBody>(/*static by default*/);
+				physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+
+				TriggerVolume::Sptr trigger = specBox->Add<TriggerVolume>();
+				trigger->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+
+				// Add a render component
+				RenderComponent::Sptr renderer = specBox->Add<RenderComponent>();
+				renderer->SetMesh(boxMesh);
+				renderer->SetMaterial(testMaterial);
+			}
+
+		}
+		
 
 		/////////////////////////// UI //////////////////////////////
 		/*

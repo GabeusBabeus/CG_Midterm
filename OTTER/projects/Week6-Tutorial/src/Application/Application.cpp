@@ -44,6 +44,7 @@
 #include "Gameplay/Components/ParticleSystem.h"
 #include "Gameplay/Components/Light.h"
 #include "Gameplay/Components/MovementBehaviour.h"
+#include "Gameplay/Components/SeekBehaviour.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -274,6 +275,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<ParticleSystem>();
 	ComponentManager::RegisterType<Light>();
 	ComponentManager::RegisterType<MovementBehaviour>();
+	ComponentManager::RegisterType<SeekBehaviour>();
 }
 
 void Application::_Load() {

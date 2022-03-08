@@ -40,7 +40,7 @@ void SeekBehaviour::seekTo(Gameplay::GameObject::Sptr& object) {
 
 void SeekBehaviour::Update(float deltaTime)
 {
-    _target= GetGameObject()->GetScene()->FindObjectByName("Character/Player")->GetPosition();
+    _target= GetGameObject()->GetScene()->FindObjectByName("Character")->GetPosition();
     glm::vec3 difference = _target-(_body->GetGameObject()->GetPosition()-glm::vec3(0.0f,0.0f,1.5f));
     //if 
     if (cbrt((difference.x * difference.x) + (difference.y * difference.y)+ (difference.z * difference.z))<1.0f) {
