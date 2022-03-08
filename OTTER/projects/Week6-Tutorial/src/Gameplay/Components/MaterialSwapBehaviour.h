@@ -20,7 +20,6 @@ public:
 
 
 	// Inherited from IComponent
-
 	virtual void OnEnteredTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger) override;
 	virtual void OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger) override;
 	virtual void Awake() override;

@@ -1,6 +1,7 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/ComponentManager.h"
 #include "Gameplay/GameObject.h"
+#include "Light.h"
 
 MaterialSwapBehaviour::MaterialSwapBehaviour() :
 	IComponent(),
@@ -14,6 +15,9 @@ void MaterialSwapBehaviour::OnEnteredTrigger(const Gameplay::Physics::TriggerVol
 	if (_renderer && EnterMaterial) {
 		_renderer->SetMaterial(EnterMaterial);
 	}
+
+	GetGameObject()->Get<Light>()->SetIntensity(10);
+
 	LOG_INFO("Entered trigger: {}", trigger->GetGameObject()->Name);
 }
 
@@ -21,8 +25,10 @@ void MaterialSwapBehaviour::OnLeavingTrigger(const Gameplay::Physics::TriggerVol
 	if (_renderer && ExitMaterial) {
 		_renderer->SetMaterial(ExitMaterial);
 	}
+	GetGameObject()->Get<Light>()->SetIntensity(0);
 	LOG_INFO("Left trigger: {}", trigger->GetGameObject()->Name);
 }
+
 
 void MaterialSwapBehaviour::Awake() {
 	_renderer = GetComponent<RenderComponent>();
